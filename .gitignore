@@ -1,3 +1,5 @@
 .env/
 experiments/
 data/
+models/
+experiments/
