@@ -1,5 +1,7 @@
 import tensorflow as tf
+import os
 from keras import layers
+from data import Dataset
 
 # Definición del generador
 def build_generator(latent_dim):
@@ -29,3 +31,32 @@ def build_discriminator(img_shape):
         layers.Dense(1, activation='sigmoid')
     ])
     return model
+
+#Definir la GAN (Generador + Discriminador)
+def build_gan(generator, discriminator):
+    discriminator.trainable = False  # El discriminador está congelado durante el entrenamiento del generador
+    model = tf.keras.Sequential([generator, discriminator])
+    return model
+
+#Preprocesamiento de las imágenes
+def load_and_preprocess_image(path):
+    img = tf.io.read_file(path)
+    img = tf.image.decode_jpeg(img, channels=3)
+    img = tf.image.resize(img, (64, 64))  # Ajustamos a 64x64
+    img = (img / 127.5) - 1.0  # Normalizamos a [-1, 1]
+    return img
+
+#Cargar las imágenes del dataset
+def load_images_from_directory(directory):
+    all_images = []
+    for label in os.listdir(directory):
+        class_dir = os.path.join(directory, label)
+        for image_file in os.listdir(class_dir):
+            image_path = os.path.join(class_dir, image_file)
+            img = load_and_preprocess_image(image_path)
+            all_images.append(img)
+    return Dataset.from_tensor_slices(all_images)
+
+dataset = load_images_from_directory('data/train')  # Ajusta la ruta según tu proyecto
+
+#
