@@ -1,4 +1,5 @@
 from keras.preprocessing.image import ImageDataGenerator
+from src.data_loader import get_generators
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
@@ -36,3 +37,8 @@ def create_generators(base_dir):
         shuffle=False
     )
     return train_gen, val_gen, test_gen
+
+train_gen, val_gen, test_gen = get_generators("data")
+print("Número de imágenes de entrenamiento:", train_gen.samples)
+print("Número de imágenes de validación:", val_gen.samples)
+print("Número de imágenes de prueba:", test_gen.samples)
